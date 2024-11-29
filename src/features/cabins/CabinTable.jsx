@@ -33,7 +33,7 @@ function CabinTable() {
     data: cabins,
     error,
   } = useQuery({
-    queryKey: ["cabin"],
+    queryKey: ["cabins"],
     queryFn: getCabins,
   });
 
@@ -49,16 +49,7 @@ function CabinTable() {
         <div></div>
       </TableHeader>
       {cabins.map((cabin) => (
-        <CabinRow cabin={cabin} key={cabin.id} role="row">
-          <div role="cell">{cabin.id}</div>
-          <div role="cell">{cabin?.name}</div>
-          <div role="cell">{cabin?.capacity}</div>
-          <div role="cell">{cabin?.price}</div>
-          <div role="cell">{cabin?.discount}</div>
-          <div role="cell">
-            <button>View</button>
-          </div>
-        </CabinRow>
+        <CabinRow cabin={cabin} key={cabin.id} />
       ))}
     </Table>
   );
