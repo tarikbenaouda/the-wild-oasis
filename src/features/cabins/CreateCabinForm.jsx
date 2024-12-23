@@ -14,6 +14,9 @@ import useEditCabin from "./useEditCabin";
 
 function CreateCabinForm({ cabinToEdit = {} }) {
   const numTries = useRef(0);
+  const { createCabin, isCreating } = useCreateCabin();
+  const { editCabin, isEditing } = useEditCabin();
+
   const isEditSession = !!Object.keys(cabinToEdit).length;
   const { id: editId, ...editValues } = cabinToEdit;
 
@@ -21,9 +24,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     defaultValues: isEditSession ? editValues : {},
   });
   const { errors } = formState;
-
-  const { createCabin, isCreating } = useCreateCabin();
-  const { editCabin, isEditing } = useEditCabin();
 
   const isWorking = isCreating || isEditing;
   function onSubmit(data) {
