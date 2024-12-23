@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -10,25 +11,19 @@ import Textarea from "../../ui/Textarea";
 import FileInput from "../../ui/FileInput";
 import { createEditCabin } from "../../services/apiCabins";
 
+import useCreateCabin from "./useCreateCabin";
+
 function CreateCabinForm({ cabinToEdit = {} }) {
+  const numTries = useRef(0);
   const isEditSession = !!Object.keys(cabinToEdit).length;
   const { id: editId, ...editValues } = cabinToEdit;
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: isEditSession ? editValues : {},
   });
   const { errors } = formState;
+
+  const { createCabin, isCreating } = useCreateCabin();
   const queryClient = useQueryClient();
-  const { mutate: createCabin, isLoading: isCreating } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success("Cabin created successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (error) => {
-      toast.error(error.message);
-    },
-  });
   const { mutate: editCabin, isLoading: isEditing } = useMutation({
     mutationFn: ({ newCabin, id }) => createEditCabin(newCabin, id),
     onSuccess: () => {
@@ -43,10 +38,23 @@ function CreateCabinForm({ cabinToEdit = {} }) {
   const isWorking = isCreating || isEditing;
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
-    if (isEditSession) editCabin({ newCabin: { ...data, image }, id: editId });
-    else createCabin({ ...data, image: data.image[0] });
+    if (isEditSession)
+      editCabin(
+        { newCabin: { ...data, image }, id: editId },
+        { onSuccess: () => reset() }
+      );
+    else
+      createCabin(
+        { ...data, image: data.image[0] },
+        { onSuccess: () => reset() }
+      );
   }
   function onError(errors) {
+    numTries.current += 1;
+    if (numTries.current === 4) {
+      toast.error("Please check the form for errors");
+      numTries.current = 0;
+    }
     console.log(errors);
   }
   return (
