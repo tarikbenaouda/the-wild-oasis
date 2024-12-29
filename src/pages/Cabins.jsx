@@ -1,7 +1,7 @@
 import CabinTable from "../features/cabins/CabinTable";
-import CreateCabinForm from "../features/cabins/CreateCabinForm";
 import Heading from "../ui/Heading";
 import Row from "../ui/Row";
+import AddCabin from "../features/cabins/AddCabin";
 
 function Cabins() {
   return (
@@ -10,9 +10,10 @@ function Cabins() {
         <Heading as="h1">All cabins</Heading>
         <p>Filter / Sort</p>
       </Row>
+
       <Row>
         <CabinTable />
-        <CreateCabinForm />
+        <AddCabin />
       </Row>
     </>
   );
